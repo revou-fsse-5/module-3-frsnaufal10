@@ -1,39 +1,67 @@
-// DOM elements
-const getRecipeBtn = document.getElementById('getRecipeBtn');
-const recipeContainer = document.getElementById('recipeContainer');
+// Get references to the button and the container for recipe details
+var getRecipeButton = document.getElementById('getRecipeBtn');
+var recipeDisplayContainer = document.getElementById('recipeContainer');
+var carouselContainer = document.getElementById('carouselContainer');
 
-// Recipe yang akan ditampilkan
-const recipe = {
-  title: "Spaghetti Carbonara",
-  instructions:
-    "1. Cook spaghetti according to package instructions. 2. In a separate pan, cook pancetta until crispy. 3. In a bowl, whisk eggs and grated cheese. 4. Combine spaghetti, pancetta, and egg mixture, stirring quickly. 5. Serve immediately with additional cheese and black pepper.",
-  image: "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
-};
-
-// Function untuk menampilkan recipe
-function displayRecipe() {
-  // Clear previous recipe details
-  recipeContainer.innerHTML = '';
-
-  // HTML Elements untuk Recipe
-  const recipeTitle = document.createElement('h2');
-  recipeTitle.classList.add('recipe-title');
-  recipeTitle.textContent = recipe.title;
-
-  const recipeInstructions = document.createElement('p');
-  recipeInstructions.classList.add('recipe-instructions');
-  recipeInstructions.textContent = recipe.instructions;
-
-  const recipeImage = document.createElement('img');
-  recipeImage.classList.add('recipe-image');
-  recipeImage.src = recipe.image;
-  recipeImage.alt = recipe.title;
-
-  // Masukkan HTML Elements di atas ke id recipeContainer
-  recipeContainer.appendChild(recipeTitle);
-  recipeContainer.appendChild(recipeImage);
-  recipeContainer.appendChild(recipeInstructions);
+// Function to fetch a random recipe from TheMealDB API
+async function fetchRandomRecipe() {
+  try {
+    const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    const recipe = data.meals[0];
+    displayRecipe(recipe);
+  } catch (error) {
+    console.error('Fetch error: ', error);
+    recipeDisplayContainer.innerHTML = '<p>Failed to load recipe. Please try again later.</p>';
+  }
 }
 
-// Event Listener Click sebagai trigger
-getRecipeBtn.addEventListener('click', displayRecipe);
+// Function to display the recipe details on the page
+function displayRecipe(recipe) {
+  // Hide the carousel container
+  carouselContainer.style.display = 'none';
+
+  // Clear previous recipe details
+  recipeDisplayContainer.innerHTML = '';
+
+  // Create and append Recipe Title
+  var titleElement = document.createElement('h2');
+  titleElement.classList.add('recipe-title');
+  titleElement.textContent = recipe.strMeal;
+  recipeDisplayContainer.appendChild(titleElement);
+
+  // Create and append Recipe Image
+  var imageElement = document.createElement('img');
+  imageElement.classList.add('recipe-image');
+  imageElement.src = recipe.strMealThumb;
+  imageElement.alt = recipe.strMeal;
+  recipeDisplayContainer.appendChild(imageElement);
+
+  // Create and append Recipe Instructions
+  var instructionsElement = document.createElement('p');
+  instructionsElement.classList.add('recipe-instructions');
+  instructionsElement.textContent = recipe.strInstructions;
+  recipeDisplayContainer.appendChild(instructionsElement);
+
+  // Create and append Ingredients List and Measurement
+  var ingredientsElement = document.createElement('ul');
+  ingredientsElement.classList.add('recipe-ingredients');
+  for (var i = 1; i <= 20; i++) {
+    var ingredient = recipe['strIngredient' + i];
+    var measure = recipe['strMeasure' + i];
+    if (ingredient) {
+      // Combine Ingredients Measurement and Ingredients Name
+      var listItem = document.createElement('li');
+      listItem.textContent = measure + ' ' + ingredient;
+      // Append combined ingredients and measurement
+      ingredientsElement.appendChild(listItem);
+    }
+  }
+  recipeDisplayContainer.appendChild(ingredientsElement);
+}
+
+// Add event listener to the button
+getRecipeButton.addEventListener('click', fetchRandomRecipe);
