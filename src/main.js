@@ -27,36 +27,32 @@ function displayRecipe(recipe) {
   // Clear previous recipe details
   recipeDisplayContainer.innerHTML = '';
 
-  // Create and append Recipe Title
+  // Create and append elements for the recipe
   var titleElement = document.createElement('h2');
   titleElement.classList.add('recipe-title');
   titleElement.textContent = recipe.strMeal;
   recipeDisplayContainer.appendChild(titleElement);
 
-  // Create and append Recipe Image
   var imageElement = document.createElement('img');
   imageElement.classList.add('recipe-image');
   imageElement.src = recipe.strMealThumb;
   imageElement.alt = recipe.strMeal;
   recipeDisplayContainer.appendChild(imageElement);
 
-  // Create and append Recipe Instructions
   var instructionsElement = document.createElement('p');
   instructionsElement.classList.add('recipe-instructions');
   instructionsElement.textContent = recipe.strInstructions;
   recipeDisplayContainer.appendChild(instructionsElement);
 
-  // Create and append Ingredients List and Measurement
+  // Create and append a list for ingredients
   var ingredientsElement = document.createElement('ul');
   ingredientsElement.classList.add('recipe-ingredients');
   for (var i = 1; i <= 20; i++) {
     var ingredient = recipe['strIngredient' + i];
     var measure = recipe['strMeasure' + i];
     if (ingredient) {
-      // Combine Ingredients Measurement and Ingredients Name
       var listItem = document.createElement('li');
       listItem.textContent = measure + ' ' + ingredient;
-      // Append combined ingredients and measurement
       ingredientsElement.appendChild(listItem);
     }
   }
